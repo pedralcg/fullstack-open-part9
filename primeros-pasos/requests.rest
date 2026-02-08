@@ -1,0 +1,35 @@
+### Prueba 1: Petición correcta (Éxito)
+POST http://localhost:3003/exercises
+Content-Type: application/json
+
+{
+  "daily_exercises": [1, 0, 2, 0, 3, 0, 2.5],
+  "target": 2.5
+}
+
+### Prueba 2: Faltan parámetros (Error 400)
+POST http://localhost:3003/exercises
+Content-Type: application/json
+
+{
+  "daily_exercises": [1, 0, 2]
+}
+
+### Prueba 3: Parámetros mal formateados (Error 400)
+### (Enviamos un string donde debería ir un número dentro del array)
+POST http://localhost:3003/exercises
+Content-Type: application/json
+
+{
+  "daily_exercises": [1, "muchas", 2],
+  "target": 2.5
+}
+
+### Prueba 4: Target no es un número (Error 400)
+POST http://localhost:3003/exercises
+Content-Type: application/json
+
+{
+  "daily_exercises": [1, 0, 2],
+  "target": "objetivo_alto"
+}
