@@ -1,6 +1,9 @@
 import express from "express";
+import diaryRouter from "./routes/diaries";
 const app = express();
 app.use(express.json());
+
+app.use("/api/diaries", diaryRouter); // Enlazamos el router
 
 const PORT = 3000;
 
