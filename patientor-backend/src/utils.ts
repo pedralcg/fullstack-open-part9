@@ -5,7 +5,7 @@ const isString = (text: unknown): text is string => {
 };
 
 const isDate = (date: string): boolean => {
-  return Boolean(Date.parse(date));
+  return !isNaN(Date.parse(date));
 };
 
 const isGender = (param: string): param is Gender => {

@@ -13,7 +13,7 @@ app.use("/api/diagnoses", diagnosisRouter);
 app.use("/api/patients", patientRouter);
 
 app.get("/api/ping", (_req, res) => {
-  console.log("someone pinged here");
+  // console.log("someone pinged here");
   res.send("pong");
 });
 
