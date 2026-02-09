@@ -1,0 +1,50 @@
+### Obtener todos los diarios (versión no sensible)
+GET http://localhost:3000/api/diaries
+
+###
+
+### Obtener un diario específico por ID (Éxito)
+GET http://localhost:3000/api/diaries/1
+
+###
+
+### Obtener un diario que no existe (Debe dar 404)
+GET http://localhost:3000/api/diaries/999
+
+###
+
+### Crear un nuevo diario (Éxito)
+POST http://localhost:3000/api/diaries
+Content-Type: application/json
+
+{
+  "date": "2026-02-10",
+  "weather": "sunny",
+  "visibility": "great",
+  "comment": "Un vuelo espectacular con TypeScript"
+}
+
+###
+
+### Error: Clima (Weather) incorrecto (Debe dar 400)
+POST http://localhost:3000/api/diaries
+Content-Type: application/json
+
+{
+  "date": "2026-02-10",
+  "weather": "freezing",
+  "visibility": "great",
+  "comment": "Esto fallará por el Enum"
+}
+
+###
+
+### Error: Falta un campo obligatorio (Visibility) (Debe dar 400)
+POST http://localhost:3000/api/diaries
+Content-Type: application/json
+
+{
+  "date": "2026-02-10",
+  "weather": "cloudy",
+  "comment": "Falta la visibilidad"
+}
