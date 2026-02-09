@@ -1,5 +1,6 @@
+import { v1 as uuid } from "uuid";
 import patients from "../../data/patients";
-import { NonSensitivePatient } from "../types";
+import { Patient, NonSensitivePatient, NewPatient } from "../types";
 
 const getNonSensitiveEntries = (): NonSensitivePatient[] => {
   // Eliminamos físicamente el campo ssn de cada objeto
@@ -12,6 +13,18 @@ const getNonSensitiveEntries = (): NonSensitivePatient[] => {
   }));
 };
 
+const addPatient = (entry: NewPatient): Patient => {
+  const id = uuid();
+  const newPatient = {
+    id,
+    ...entry,
+  };
+
+  patients.push(newPatient);
+  return newPatient;
+};
+
 export default {
   getNonSensitiveEntries,
+  addPatient,
 };

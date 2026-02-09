@@ -21,3 +21,6 @@ export interface Patient {
 
 // Aquí usamos el Utility Type Omit para excluir el SSN
 export type NonSensitivePatient = Omit<Patient, "ssn">;
+
+// Tipo para los datos que recibimos antes de asignarles un ID
+export type NewPatient = Omit<Patient, "id">;
