@@ -13,3 +13,5 @@ export interface DiaryEntry {
 
 // Para obtener los datos sin comentarios (Non-Sensitive)
 export type NonSensitiveDiaryEntry = Omit<DiaryEntry, "comment">;
+
+export type NewDiaryEntry = Omit<DiaryEntry, "id">;
