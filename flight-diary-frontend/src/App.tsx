@@ -3,6 +3,15 @@ import type { NonSensitiveDiaryEntry, Visibility, Weather } from "./types";
 import { createDiary, getAllDiaries } from "./services/diaryService";
 import axios from "axios";
 
+const weatherOptions: Weather[] = [
+  "sunny",
+  "rainy",
+  "cloudy",
+  "stormy",
+  "windy",
+];
+const visibilityOptions: Visibility[] = ["great", "good", "ok", "poor"];
+
 const App = () => {
   // Tipado explícito del estado inicial
   const [diaries, setDiaries] = useState<NonSensitiveDiaryEntry[]>([]);
@@ -10,7 +19,7 @@ const App = () => {
   // Estados para el formulario
   const [date, setDate] = useState("");
   const [weather, setWeather] = useState<Weather>("sunny"); // Valor inicial tipado
-  const [visibility, setVisibility] = useState("");
+  const [visibility, setVisibility] = useState<Visibility>("great"); // Valor inicial tipado
   const [comment, setComment] = useState("");
   const [error, setError] = useState<string>("");
 
@@ -28,7 +37,7 @@ const App = () => {
     const diaryToAdd = {
       date,
       weather: weather,
-      visibility: visibility as Visibility,
+      visibility: visibility,
       comment,
     };
 
@@ -38,7 +47,7 @@ const App = () => {
         // Limpiar formulario
         setDate("");
         // setWeather("");
-        setVisibility("");
+        // setVisibility("");
         setComment("");
       })
       .catch((e: unknown) => {
@@ -75,29 +84,34 @@ const App = () => {
             onChange={({ target }) => setDate(target.value)}
           />
         </div>
-        <div>
-          <strong>weather: </strong>
-          {(["sunny", "rainy", "cloudy", "stormy", "windy"] as Weather[]).map(
-            (option) => (
-              <label key={option}>
-                <input
-                  type="radio"
-                  name="weather"
-                  value={option}
-                  checked={weather === option}
-                  onChange={() => setWeather(option)}
-                />
-                {option}
-              </label>
-            ),
-          )}
+        <div style={{ margin: "10px 0" }}>
+          <strong>visibility: </strong>
+          {visibilityOptions.map((option) => (
+            <label key={option} style={{ marginRight: "10px" }}>
+              <input
+                type="radio"
+                name="visibility"
+                onChange={() => setVisibility(option)}
+                checked={visibility === option}
+              />
+              {option}
+            </label>
+          ))}
         </div>
-        <div>
-          visibility{" "}
-          <input
-            value={visibility}
-            onChange={({ target }) => setVisibility(target.value)}
-          />
+
+        <div style={{ margin: "10px 0" }}>
+          <strong>weather: </strong>
+          {weatherOptions.map((option) => (
+            <label key={option} style={{ marginRight: "10px" }}>
+              <input
+                type="radio"
+                name="weather"
+                onChange={() => setWeather(option)}
+                checked={weather === option}
+              />
+              {option}
+            </label>
+          ))}
         </div>
         <div>
           comment{" "}
