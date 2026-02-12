@@ -46,12 +46,22 @@ const PatientDetailPage = () => {
         entries
       </Typography>
       {patient.entries.map((entry) => (
-        <div key={entry.id}>
-          {/* Por ahora solo mostramos la descripción según el ejercicio */}
-          <p>
+        <Box key={entry.id} sx={{ mb: 2 }}>
+          <Typography>
             {entry.date} <i>{entry.description}</i>
-          </p>
-        </div>
+          </Typography>
+
+          {/* Renderizado de códigos de diagnóstico si existen */}
+          {entry.diagnosisCodes && (
+            <ul>
+              {entry.diagnosisCodes.map((code) => (
+                <li key={code}>
+                  <Typography variant="body2">{code}</Typography>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Box>
       ))}
     </Box>
   );
