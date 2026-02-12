@@ -8,6 +8,16 @@ router.get("/", (_req, res) => {
   res.send(patientService.getNonSensitiveEntries());
 });
 
+router.get("/:id", (req, res) => {
+  const patient = patientService.getById(req.params.id);
+
+  if (patient) {
+    res.json(patient); // Esto devolverá el objeto completo incluyendo ssn y entries
+  } else {
+    res.status(404).send("Patient not found");
+  }
+});
+
 router.post("/", (req, res) => {
   try {
     const newPatient = toNewPatient(req.body);
