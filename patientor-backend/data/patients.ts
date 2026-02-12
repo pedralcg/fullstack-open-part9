@@ -6,7 +6,16 @@ const data = [
     ssn: "090786-122X",
     gender: "male",
     occupation: "New york city cop",
-    entries: [],
+    entries: [
+      {
+        id: "b4f4eca1-2aa7-4b13-9a79-12f6d8718c30",
+        date: "2019-10-20",
+        type: "HealthCheck",
+        specialist: "MD House",
+        description: "Yearly control visit. Condition optimal.",
+        healthCheckRating: 0,
+      },
+    ],
   },
   {
     id: "d2773598-f723-11e9-8f0b-362b9e155667",
@@ -33,7 +42,16 @@ const data = [
     ssn: "050174-432N",
     gender: "female",
     occupation: "Forensic Pathologist",
-    entries: [],
+    entries: [
+      {
+        id: "54a8746e-d79c-4f4a-8d5a-5baac051d39d",
+        date: "2019-05-01",
+        specialist: "Dr. Abu",
+        type: "HealthCheck",
+        description: "Routine check up.",
+        healthCheckRating: 1,
+      },
+    ],
   },
   {
     id: "d2773c6e-f723-11e9-8f0b-362b9e155667",
@@ -69,6 +87,14 @@ const data = [
           startDate: "2019-08-05",
           endDate: "2019-08-28",
         },
+      },
+      {
+        id: "37160359-2536-4e0e-8c65-03732644e59f",
+        date: "2019-09-10",
+        type: "HealthCheck",
+        specialist: "MD House",
+        description: "Follow-up visit after radiation exposure.",
+        healthCheckRating: 2,
       },
     ],
   },

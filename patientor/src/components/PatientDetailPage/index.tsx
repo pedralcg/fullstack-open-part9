@@ -2,10 +2,107 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Typography, Box } from "@mui/material";
 import { Male, Female, Transgender } from "@mui/icons-material"; // Iconos de género
+import WorkIcon from "@mui/icons-material/Work";
+import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
 
-import { Patient, Gender, Diagnosis } from "../../types";
+import {
+  Patient,
+  Gender,
+  Diagnosis,
+  Entry,
+  HospitalEntry,
+  OccupationalHealthcareEntry,
+} from "../../types";
 import patientService from "../../services/patients";
 import diagnosisService from "../../services/diagnoses";
+import HealthCheckDetails from "../HealthCheckDetails";
+
+//! --- COMPONENTES DE APOYO ---
+
+const assertNever = (value: never): never => {
+  throw new Error(`Unhandled case: ${JSON.stringify(value)}`);
+};
+
+const DiagnosisList = ({
+  codes,
+  diagnoses,
+}: {
+  codes?: string[];
+  diagnoses: Diagnosis[];
+}) => {
+  if (!codes) return null;
+  return (
+    <ul>
+      {codes.map((code) => {
+        const diagnosis = diagnoses.find((d) => d.code === code);
+        return (
+          <li key={code}>
+            <Typography variant="body2">
+              {code} {diagnosis ? diagnosis.name : null}
+            </Typography>
+          </li>
+        );
+      })}
+    </ul>
+  );
+};
+
+const HospitalDetails = ({
+  entry,
+  diagnoses,
+}: {
+  entry: HospitalEntry;
+  diagnoses: Diagnosis[];
+}) => (
+  <Box sx={{ border: "1px solid black", borderRadius: "5px", p: 1, mb: 1 }}>
+    <Typography>
+      {entry.date} <LocalHospitalIcon />
+    </Typography>
+    <Typography sx={{ fontStyle: "italic" }}>{entry.description}</Typography>
+    <DiagnosisList codes={entry.diagnosisCodes} diagnoses={diagnoses} />
+    <Typography>
+      Discharge: {entry.discharge.date} - {entry.discharge.criteria}
+    </Typography>
+    <Typography>diagnose by {entry.specialist}</Typography>
+  </Box>
+);
+
+const OccupationalHealthcareDetails = ({
+  entry,
+  diagnoses,
+}: {
+  entry: OccupationalHealthcareEntry;
+  diagnoses: Diagnosis[];
+}) => (
+  <Box sx={{ border: "1px solid black", borderRadius: "5px", p: 1, mb: 1 }}>
+    <Typography>
+      {entry.date} <WorkIcon /> <b>{entry.employerName}</b>
+    </Typography>
+    <Typography sx={{ fontStyle: "italic" }}>{entry.description}</Typography>
+    <DiagnosisList codes={entry.diagnosisCodes} diagnoses={diagnoses} />
+    <Typography>diagnose by {entry.specialist}</Typography>
+  </Box>
+);
+
+const EntryDetails: React.FC<{ entry: Entry; diagnoses: Diagnosis[] }> = ({
+  entry,
+  diagnoses,
+}) => {
+  switch (entry.type) {
+    case "Hospital":
+      return <HospitalDetails entry={entry} diagnoses={diagnoses} />;
+    case "OccupationalHealthcare":
+      return (
+        <OccupationalHealthcareDetails entry={entry} diagnoses={diagnoses} />
+      );
+    case "HealthCheck":
+      return <HealthCheckDetails entry={entry} diagnoses={diagnoses} />;
+    default:
+      return assertNever(entry);
+  }
+};
+
+//! --- COMPONENTE PRINCIPAL ---
 
 const PatientDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,20 +110,17 @@ const PatientDetailPage = () => {
   const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
 
   useEffect(() => {
-    const fetchPatient = async () => {
+    const fetchData = async () => {
       if (id) {
-        const p = await patientService.getOne(id);
+        const [p, d] = await Promise.all([
+          patientService.getOne(id),
+          diagnosisService.getAll(),
+        ]);
         setPatient(p);
+        setDiagnoses(d);
       }
     };
-
-    const fetchDiagnoses = async () => {
-      const d = await diagnosisService.getAll();
-      setDiagnoses(d);
-    };
-
-    void fetchPatient();
-    void fetchDiagnoses();
+    void fetchData();
   }, [id]);
 
   if (!patient) return null;
@@ -54,30 +148,9 @@ const PatientDetailPage = () => {
       <Typography variant="h5" sx={{ mt: 3, mb: 1 }} fontWeight="bold">
         entries
       </Typography>
+
       {patient.entries.map((entry) => (
-        <Box key={entry.id} sx={{ mb: 2 }}>
-          <Typography>
-            {entry.date} <i>{entry.description}</i>
-          </Typography>
-
-          {/* Renderizado de códigos de diagnóstico si existen */}
-          {entry.diagnosisCodes && (
-            <ul>
-              {entry.diagnosisCodes.map((code) => {
-                // 1. Buscamos el objeto diagnóstico correspondiente a este código
-                const diagnosis = diagnoses.find((d) => d.code === code);
-
-                return (
-                  <li key={code}>
-                    <Typography variant="body2">
-                      {code} - {diagnosis ? diagnosis.name : null}
-                    </Typography>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </Box>
+        <EntryDetails key={entry.id} entry={entry} diagnoses={diagnoses} />
       ))}
     </Box>
   );
