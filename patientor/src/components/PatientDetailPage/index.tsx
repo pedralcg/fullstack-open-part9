@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Typography, Box } from "@mui/material";
+import { Typography, Box, Button } from "@mui/material";
 import { Male, Female, Transgender } from "@mui/icons-material"; // Iconos de género
 import WorkIcon from "@mui/icons-material/Work";
 import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
@@ -111,6 +111,7 @@ const PatientDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const [patient, setPatient] = useState<Patient>();
   const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
+  const [showForm, setShowForm] = useState(false);
   const [error, setError] = useState<string>();
 
   const submitNewEntry = async (values: EntryWithoutId) => {
@@ -121,6 +122,7 @@ const PatientDetailPage = () => {
           ...patient,
           entries: patient.entries.concat(entry),
         });
+        setShowForm(false);
         setError(undefined);
       }
     } catch (e: unknown) {
@@ -165,16 +167,26 @@ const PatientDetailPage = () => {
         {patient.name} {genderIcon()}
       </Typography>
 
-      {/* AQUÍ VA EL FORMULARIO */}
-      <AddEntryForm
-        onSubmit={submitNewEntry}
-        onCancel={() => setError(undefined)}
-        error={error}
-        diagnoses={diagnoses}
-      />
+      <Typography>ssn: {patient.ssn}</Typography>
+      <Typography sx={{ mb: 2 }}>occupation: {patient.occupation}</Typography>
 
-      <Typography sx={{ mt: 2 }}>ssn: {patient.ssn}</Typography>
-      <Typography>occupation: {patient.occupation}</Typography>
+      {/* SECCIÓN DEL FORMULARIO DINÁMICO */}
+      {showForm ? (
+        <AddEntryForm
+          onSubmit={submitNewEntry}
+          onCancel={() => setShowForm(false)}
+          error={error}
+          diagnoses={diagnoses}
+        />
+      ) : (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => setShowForm(true)}
+        >
+          ADD NEW ENTRY
+        </Button>
+      )}
 
       <Typography variant="h5" sx={{ mt: 3, mb: 1 }} fontWeight="bold">
         entries
