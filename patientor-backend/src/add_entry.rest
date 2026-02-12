@@ -1,0 +1,66 @@
+### Variables
+@hostname = localhost
+@port = 3001
+@host = http://{{hostname}}:{{port}}
+@patientId = d2773c6e-f723-11e9-8f0b-362b9e155667
+
+### 1. Obtener los datos del paciente (para verificar estado inicial)
+GET {{host}}/api/patients/{{patientId}}
+
+###
+
+### 2. Agregar una entrada de tipo HealthCheck (Éxito)
+POST {{host}}/api/patients/{{patientId}}/entries
+Content-Type: application/json
+
+{
+  "date": "2026-02-12",
+  "specialist": "Dr. House",
+  "type": "HealthCheck",
+  "description": "Revisión anual de rutina.",
+  "healthCheckRating": 0,
+  "diagnosisCodes": ["Z00.00"]
+}
+
+###
+
+### 3. Agregar una entrada de tipo Hospital (Éxito)
+POST {{host}}/api/patients/{{patientId}}/entries
+Content-Type: application/json
+
+{
+  "date": "2026-01-15",
+  "specialist": "Dr. Abu",
+  "type": "Hospital",
+  "description": "Ingreso por apendicitis aguda.",
+  "discharge": {
+    "date": "2026-01-20",
+    "criteria": "Paciente recuperado tras cirugía."
+  }
+}
+
+###
+
+### 4. Prueba de error: Falta campo obligatorio (Debe fallar con 400)
+POST {{host}}/api/patients/{{patientId}}/entries
+Content-Type: application/json
+
+{
+  "date": "2026-02-12",
+  "specialist": "Dr. House",
+  "type": "HealthCheck",
+  "description": "Esta entrada no tiene rating"
+}
+
+###
+
+### 5. Prueba de error: Tipo de entrada inválido (Debe fallar con 400)
+POST {{host}}/api/patients/{{patientId}}/entries
+Content-Type: application/json
+
+{
+  "date": "2026-02-12",
+  "specialist": "Dr. House",
+  "type": "CitaInexistente",
+  "description": "El tipo no es válido"
+}
