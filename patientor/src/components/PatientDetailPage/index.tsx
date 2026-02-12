@@ -170,6 +170,7 @@ const PatientDetailPage = () => {
         onSubmit={submitNewEntry}
         onCancel={() => setError(undefined)}
         error={error}
+        diagnoses={diagnoses}
       />
 
       <Typography sx={{ mt: 2 }}>ssn: {patient.ssn}</Typography>
