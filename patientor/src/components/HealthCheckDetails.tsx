@@ -26,7 +26,6 @@ const HealthCheckDetails = ({
         {entry.date} <MedicalServicesIcon />
       </Typography>
       <Typography sx={{ fontStyle: "italic" }}>{entry.description}</Typography>
-
       <FavoriteIcon sx={{ color: ratingColor }} />
 
       {/* ERROR CORREGIDO: Aquí listamos los diagnósticos manualmente o con un componente que EXISTA */}
@@ -37,7 +36,6 @@ const HealthCheckDetails = ({
           </li>
         ))}
       </ul>
-
       <Typography variant="body2" sx={{ mt: 1 }}>
         diagnose by {entry.specialist}
       </Typography>

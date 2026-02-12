@@ -12,10 +12,13 @@ import {
   Entry,
   HospitalEntry,
   OccupationalHealthcareEntry,
+  EntryWithoutId,
 } from "../../types";
 import patientService from "../../services/patients";
 import diagnosisService from "../../services/diagnoses";
 import HealthCheckDetails from "../HealthCheckDetails";
+import axios from "axios";
+import AddEntryForm from "./AddEntryForm";
 
 //! --- COMPONENTES DE APOYO ---
 
@@ -108,6 +111,26 @@ const PatientDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const [patient, setPatient] = useState<Patient>();
   const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
+  const [error, setError] = useState<string>();
+
+  const submitNewEntry = async (values: EntryWithoutId) => {
+    try {
+      if (patient && id) {
+        const entry = await patientService.createEntry(id, values);
+        setPatient({
+          ...patient,
+          entries: patient.entries.concat(entry),
+        });
+        setError(undefined);
+      }
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        setError(e.response?.data || "Unrecognized axios error");
+      } else {
+        setError("Unknown error");
+      }
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -141,6 +164,13 @@ const PatientDetailPage = () => {
       <Typography variant="h4" fontWeight="bold">
         {patient.name} {genderIcon()}
       </Typography>
+
+      {/* AQUÍ VA EL FORMULARIO */}
+      <AddEntryForm
+        onSubmit={submitNewEntry}
+        onCancel={() => setError(undefined)}
+        error={error}
+      />
 
       <Typography sx={{ mt: 2 }}>ssn: {patient.ssn}</Typography>
       <Typography>occupation: {patient.occupation}</Typography>
