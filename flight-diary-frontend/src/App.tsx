@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import type { NonSensitiveDiaryEntry, Visibility, Weather } from "./types";
 import { createDiary, getAllDiaries } from "./services/diaryService";
+import axios from "axios";
 
 const App = () => {
   // Tipado explícito del estado inicial
@@ -11,6 +12,7 @@ const App = () => {
   const [weather, setWeather] = useState<Weather>("sunny"); // Valor inicial tipado
   const [visibility, setVisibility] = useState("");
   const [comment, setComment] = useState("");
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
     getAllDiaries().then((data) => {
@@ -20,6 +22,7 @@ const App = () => {
 
   const diaryCreation = (event: React.SyntheticEvent) => {
     event.preventDefault();
+    setError(""); // Limpiar errores previos
 
     // Creamos el objeto siguiendo el tipo NewDiaryEntry
     const diaryToAdd = {
@@ -29,19 +32,40 @@ const App = () => {
       comment,
     };
 
-    createDiary(diaryToAdd).then((data) => {
-      setDiaries(diaries.concat(data));
-      // Limpiar formulario
-      setDate("");
-      // setWeather("");
-      setVisibility("");
-      setComment("");
-    });
+    createDiary(diaryToAdd)
+      .then((data) => {
+        setDiaries(diaries.concat(data));
+        // Limpiar formulario
+        setDate("");
+        // setWeather("");
+        setVisibility("");
+        setComment("");
+      })
+      .catch((e: unknown) => {
+        // Estrechamiento de tipo para Axios
+        if (axios.isAxiosError(e)) {
+          if (e.response && typeof e.response.data === "string") {
+            // Captura el mensaje específico del backend ("Incorrect visibility...")
+            setError(e.response.data);
+          } else {
+            setError("Unrecognized axios error");
+          }
+        } else {
+          setError("Unknown error occurred");
+        }
+
+        // Opcional: El error desaparece tras 5 segundos
+        setTimeout(() => setError(""), 5000);
+      });
   };
 
   return (
     <div>
       <h2>Add new entry</h2>
+
+      {/* Renderizado condicional del error */}
+      {error && <p style={{ color: "red" }}>Error: {error}</p>}
+
       <form onSubmit={diaryCreation}>
         <div>
           date{" "}
