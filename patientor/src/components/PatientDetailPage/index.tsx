@@ -3,12 +3,14 @@ import { useParams } from "react-router-dom";
 import { Typography, Box } from "@mui/material";
 import { Male, Female, Transgender } from "@mui/icons-material"; // Iconos de género
 
-import { Patient, Gender } from "../../types";
+import { Patient, Gender, Diagnosis } from "../../types";
 import patientService from "../../services/patients";
+import diagnosisService from "../../services/diagnoses";
 
 const PatientDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const [patient, setPatient] = useState<Patient>();
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
 
   useEffect(() => {
     const fetchPatient = async () => {
@@ -17,7 +19,14 @@ const PatientDetailPage = () => {
         setPatient(p);
       }
     };
+
+    const fetchDiagnoses = async () => {
+      const d = await diagnosisService.getAll();
+      setDiagnoses(d);
+    };
+
     void fetchPatient();
+    void fetchDiagnoses();
   }, [id]);
 
   if (!patient) return null;
@@ -54,11 +63,18 @@ const PatientDetailPage = () => {
           {/* Renderizado de códigos de diagnóstico si existen */}
           {entry.diagnosisCodes && (
             <ul>
-              {entry.diagnosisCodes.map((code) => (
-                <li key={code}>
-                  <Typography variant="body2">{code}</Typography>
-                </li>
-              ))}
+              {entry.diagnosisCodes.map((code) => {
+                // 1. Buscamos el objeto diagnóstico correspondiente a este código
+                const diagnosis = diagnoses.find((d) => d.code === code);
+
+                return (
+                  <li key={code}>
+                    <Typography variant="body2">
+                      {code} - {diagnosis ? diagnosis.name : null}
+                    </Typography>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </Box>
